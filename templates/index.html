@@ -19,37 +19,61 @@
             min-height: 100vh;
         }
 
+        /* Layout Responsivo: Coluna em telas pequenas, Linha em telas grandes */
+        .container-app {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 900px) {
+            .container-app {
+                flex-direction: column;
+            }
+        }
+
         /* Sidebar / Painel Lateral */
         .sidebar {
-            width: 320px;
+            width: 360px;
             background-color: #1e293b;
             color: #fff;
-            padding: 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 100%;
+                padding: 16px;
+            }
         }
 
         .sidebar h2 {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             color: #cbd5e1;
             border-bottom: 1px solid #334155;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
+            margin-bottom: 10px;
         }
 
         .form-group label {
             font-size: 0.85rem;
             color: #94a3b8;
+            font-weight: 600;
         }
 
         .form-group input, 
-        .form-group textarea {
+        .form-group textarea,
+        .form-group select {
             width: 100%;
             padding: 10px;
             border-radius: 6px;
@@ -61,18 +85,20 @@
 
         .form-group textarea {
             resize: vertical;
-            height: 100px;
+            height: 90px;
         }
 
         .btn {
             background-color: #2563eb;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 12px 15px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             transition: background 0.2s;
+            width: 100%;
+            text-align: center;
         }
 
         .btn:hover {
@@ -81,7 +107,6 @@
 
         .btn-secondary {
             background-color: #475569;
-            text-align: center;
             text-decoration: none;
             display: inline-block;
             margin-top: 10px;
@@ -98,6 +123,12 @@
             overflow-y: auto;
         }
 
+        @media (max-width: 600px) {
+            .main-content {
+                padding: 16px;
+            }
+        }
+
         .header {
             margin-bottom: 25px;
         }
@@ -112,11 +143,17 @@
             font-size: 0.95rem;
         }
 
-        /* Grid de Cards */
+        /* Grid de Cards Adaptável */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .card {
@@ -133,18 +170,43 @@
         .card h3 {
             font-size: 1.1rem;
             color: #1e293b;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        .card p {
+        .card-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .card-body {
             font-size: 0.9rem;
             color: #475569;
             line-height: 1.4;
             white-space: pre-line;
-            max-height: 150px;
+            max-height: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .tag-item {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
         }
 
         .card-footer {
@@ -175,54 +237,97 @@
 </head>
 <body>
 
-    <!-- Sidebar: Criar Nota & Navegação -->
-    <div class="sidebar">
-        <h2>Adicionar Estudo</h2>
-        <form action="/salvar" method="POST" class="form-group">
-            <div class="form-group">
-                <label for="titulo">Título</label>
-                <input type="text" id="titulo" name="titulo" placeholder="Ex: Passagem de Mateus 5" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="conteudo">Conteúdo / Anotações</label>
-                <textarea id="conteudo" name="conteudo" placeholder="Digite aqui o resumo do estudo..." required></textarea>
-            </div>
+    <div class="container-app">
+        <!-- Sidebar Responsiva -->
+        <div class="sidebar">
+            <h2>Cadastrar Estudo</h2>
+            <form action="/api/estudos" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" name="titulo" placeholder="Ex: Dogma da Trindade" required>
+                </div>
 
-            <button type="submit" class="btn">Salvar no Banco</button>
-        </form>
+                <div class="form-group">
+                    <label for="categoria">Categoria</label>
+                    <select id="categoria" name="categoria">
+                        <option value="Conceitos">Conceitos</option>
+                        <option value="Dogmas">Dogmas</option>
+                        <option value="Sagradas Escrituras">Sagradas Escrituras</option>
+                        <option value="Teologia">Teologia</option>
+                        <option value="Catequese">Catequese</option>
+                    </select>
+                </div>
 
-        <hr style="border-color: #334155; margin: 10px 0;">
+                <div class="form-group">
+                    <label for="resumo">Resumo / Introdução</label>
+                    <input type="text" id="resumo" name="resumo" placeholder="Pequena síntese do tema...">
+                </div>
 
-        <h2>Navegação</h2>
-        <a href="/pregacao" class="btn btn-secondary">Gerar Pregação com IA</a>
-    </div>
+                <div class="form-group">
+                    <label for="conteudo">Conteúdo Completo</label>
+                    <textarea id="conteudo" name="conteudo" placeholder="Anotações detalhadas..."></textarea>
+                </div>
 
-    <!-- Conteúdo Principal: Lista de Notas -->
-    <div class="main-content">
-        <div class="header">
-            <h1>Acervo de Estudos</h1>
-            <p>Todas as notas sincronizadas do Obsidian e salvas manualmente.</p>
+                <div class="form-group">
+                    <label for="tags">Tags (separadas por vírgula)</label>
+                    <input type="text" id="tags" name="tags" placeholder="ex: Fe, Graca, Oracao">
+                </div>
+
+                <div class="form-group">
+                    <label for="referencias">Referências (vírgula)</label>
+                    <input type="text" id="referencias" name="referencias" placeholder="ex: CIC 1802, Mt 5,1">
+                </div>
+
+                <div class="form-group">
+                    <label for="arquivos">Anexar Arquivo (PDF / Imagem)</label>
+                    <input type="file" id="arquivos" name="arquivos" multiple>
+                </div>
+
+                <button type="submit" class="btn">Salvar Estudo</button>
+            </form>
+
+            <hr style="border-color: #334155; margin: 10px 0;">
+
+            <h2>Laboratório</h2>
+            <a href="/pregacao" class="btn btn-secondary">Gerar Pregação com IA</a>
         </div>
 
-        <div class="cards-grid">
-            {% for nota in notas %}
-                <div class="card">
-                    <div>
-                        <h3>{{ nota.titulo }}</h3>
-                        <p>{{ nota.conteudo }}</p>
+        <!-- Conteúdo Principal -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Acervo do Segundo Cérebro</h1>
+                <p>Estudos sincronizados e cadastrados no seu repositório teológico.</p>
+            </div>
+
+            <div class="cards-grid">
+                {% for nota in notas %}
+                    <div class="card">
+                        <div>
+                            <span class="card-category">{{ nota.categoria if nota.categoria else 'Geral' }}</span>
+                            <h3>{{ nota.titulo }}</h3>
+                            <div class="card-body">{{ nota.resumo if nota.resumo else nota.conteudo }}</div>
+                            
+                            {% if nota.tags %}
+                                <div class="card-tags">
+                                    {% for tag in nota.tags %}
+                                        <span class="tag-item">#{{ tag }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="card-footer">
+                            <span class="tag-origem">{{ nota.origem if nota.origem else 'Obsidian / Web' }}</span>
+                            <span>{{ nota.data_criacao.strftime('%d/%m/%Y') if nota.data_criacao else '' }}</span>
+                        </div>
                     </div>
-                    <div class="card-footer">
-                        <span class="tag-origem">{{ nota.origem if nota.origem else 'Manual' }}</span>
-                        <span>{{ nota.data_criacao.strftime('%d/%m/%Y') if nota.data_criacao else '' }}</span>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>Nenhum estudo cadastrado ainda</h3>
+                        <p>Utilize o painel lateral para adicionar notas ou sincronizar do Obsidian.</p>
                     </div>
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <h3>Nenhum estudo encontrado</h3>
-                    <p>Rode o script do Obsidian ou insira um novo estudo pelo painel lateral.</p>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
