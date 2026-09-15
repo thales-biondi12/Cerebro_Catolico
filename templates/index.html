@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Segundo Cérebro Católica</title>
+    <title>Segundo Cérebro Católico</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Georgia', 'Segoe UI', serif;
         }
 
         body {
-            background-color: #f4f6f9;
-            color: #333;
+            background-color: #f7f4ef;
+            color: #2c221e;
             display: flex;
             min-height: 100vh;
         }
 
-        /* Layout Responsivo: Coluna em telas pequenas, Linha em telas grandes */
         .container-app {
             display: flex;
             width: 100%;
@@ -32,42 +31,83 @@
             }
         }
 
-        /* Sidebar / Painel Lateral */
+        /* Sidebar Dourada / Marrom Teológico */
         .sidebar {
-            width: 360px;
-            background-color: #1e293b;
-            color: #fff;
+            width: 380px;
+            background-color: #1c130e;
+            color: #f3e8d3;
             padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 16px;
             overflow-y: auto;
+            border-right: 3px solid #c5a059;
         }
 
         @media (max-width: 900px) {
             .sidebar {
                 width: 100%;
-                padding: 16px;
+                padding: 18px;
+                border-right: none;
+                border-bottom: 3px solid #c5a059;
             }
         }
 
         .sidebar h2 {
-            font-size: 1.25rem;
-            color: #cbd5e1;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 8px;
+            font-size: 1.3rem;
+            color: #d4af37;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        /* Sistema de Abas Lateral */
+        .tabs-nav {
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #3d2c23;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 10px;
+            background-color: #2b1f18;
+            color: #a89485;
+            border: 1px solid #3d2c23;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background-color: #c5a059;
+            color: #1c130e;
+            border-color: #d4af37;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 6px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: #c5a059;
             font-weight: 600;
         }
 
@@ -77,9 +117,9 @@
             width: 100%;
             padding: 10px;
             border-radius: 6px;
-            border: 1px solid #334155;
-            background-color: #0f172a;
-            color: #fff;
+            border: 1px solid #4a382c;
+            background-color: #2b1f18;
+            color: #f3e8d3;
             font-size: 0.9rem;
         }
 
@@ -89,8 +129,8 @@
         }
 
         .btn {
-            background-color: #2563eb;
-            color: white;
+            background-color: #c5a059;
+            color: #1c130e;
             border: none;
             padding: 12px 15px;
             border-radius: 6px;
@@ -99,21 +139,56 @@
             transition: background 0.2s;
             width: 100%;
             text-align: center;
+            font-size: 0.95rem;
         }
 
         .btn:hover {
-            background-color: #1d4ed8;
+            background-color: #d4af37;
         }
 
-        .btn-secondary {
-            background-color: #475569;
+        /* Botão de Destaque para Montar Pregação / Catequese */
+        .btn-pregacao {
+            background-color: #d4af37;
+            color: #1c130e;
+            border: 1px solid #f3e8d3;
             text-decoration: none;
-            display: inline-block;
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+            padding: 14px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-pregacao:hover {
+            background-color: #e5be48;
+            transform: translateY(-2px);
+        }
+
+        /* Tabela de Abreviações Teológicas */
+        .table-abrev {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
             margin-top: 10px;
         }
 
-        .btn-secondary:hover {
-            background-color: #334155;
+        .table-abrev th, .table-abrev td {
+            padding: 8px 10px;
+            border: 1px solid #3d2c23;
+            text-align: left;
+        }
+
+        .table-abrev th {
+            background-color: #2b1f18;
+            color: #d4af37;
+        }
+
+        .table-abrev td {
+            color: #e5d8c3;
         }
 
         /* Conteúdo Principal */
@@ -131,19 +206,22 @@
 
         .header {
             margin-bottom: 25px;
+            border-bottom: 2px solid #e0d5c1;
+            padding-bottom: 15px;
         }
 
         .header h1 {
-            font-size: 1.8rem;
-            color: #0f172a;
+            font-size: 2rem;
+            color: #3b281c;
+            font-family: 'Times New Roman', serif;
         }
 
         .header p {
-            color: #64748b;
+            color: #7a6352;
             font-size: 0.95rem;
         }
 
-        /* Grid de Cards Adaptável */
+        /* Cards Teológicos */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -160,32 +238,34 @@
             background-color: #ffffff;
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #e5d8c3;
+            border-top: 4px solid #c5a059;
         }
 
         .card h3 {
-            font-size: 1.1rem;
-            color: #1e293b;
-            margin-bottom: 8px;
+            font-size: 1.15rem;
+            color: #2c221e;
+            margin-bottom: 6px;
+            font-family: 'Times New Roman', serif;
         }
 
         .card-category {
             font-size: 0.75rem;
             text-transform: uppercase;
             font-weight: bold;
-            color: #2563eb;
+            color: #8c6d2d;
             margin-bottom: 10px;
             display: block;
         }
 
         .card-body {
             font-size: 0.9rem;
-            color: #475569;
-            line-height: 1.4;
+            color: #544336;
+            line-height: 1.5;
             white-space: pre-line;
             max-height: 120px;
             overflow: hidden;
@@ -201,27 +281,28 @@
         }
 
         .tag-item {
-            background-color: #eff6ff;
-            color: #1d4ed8;
+            background-color: #f7f1e5;
+            color: #8c6d2d;
             font-size: 0.75rem;
             padding: 2px 8px;
             border-radius: 12px;
-            font-weight: 500;
+            font-weight: bold;
+            border: 1px solid #e2d3b7;
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #f1f5f9;
+            border-top: 1px solid #f2e9db;
             padding-top: 10px;
             font-size: 0.75rem;
-            color: #94a3b8;
+            color: #8c7868;
         }
 
         .tag-origem {
-            background-color: #e2e8f0;
-            color: #334155;
+            background-color: #e2d3b7;
+            color: #3b281c;
             padding: 2px 8px;
             border-radius: 4px;
             font-weight: 600;
@@ -229,7 +310,7 @@
 
         .empty-state {
             text-align: center;
-            color: #94a3b8;
+            color: #8c7868;
             grid-column: 1 / -1;
             padding: 50px 0;
         }
@@ -238,65 +319,98 @@
 <body>
 
     <div class="container-app">
-        <!-- Sidebar Responsiva -->
+        <!-- Sidebar Dourada/Marrom com Abas -->
         <div class="sidebar">
-            <h2>Cadastrar Estudo</h2>
-            <form action="/api/estudos" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="titulo">Título</label>
-                    <input type="text" id="titulo" name="titulo" placeholder="Ex: Dogma da Trindade" required>
-                </div>
+            <h2>Segundo Cérebro</h2>
+            
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="openTab(event, 'tab-estudos')">Adicionar Estudo</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-abreviacoes')">Abreviações</button>
+            </div>
 
-                <div class="form-group">
-                    <label for="categoria">Categoria</label>
-                    <select id="categoria" name="categoria">
-                        <option value="Conceitos">Conceitos</option>
-                        <option value="Dogmas">Dogmas</option>
-                        <option value="Sagradas Escrituras">Sagradas Escrituras</option>
-                        <option value="Teologia">Teologia</option>
-                        <option value="Catequese">Catequese</option>
-                    </select>
-                </div>
+            <!-- Aba 1: Adicionar Estudos -->
+            <div id="tab-estudos" class="tab-content active">
+                <form action="/api/estudos" method="POST" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="titulo">Título</label>
+                        <input type="text" id="titulo" name="titulo" placeholder="Ex: Dogma da Trindade" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="resumo">Resumo / Introdução</label>
-                    <input type="text" id="resumo" name="resumo" placeholder="Pequena síntese do tema...">
-                </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoria</label>
+                        <select id="categoria" name="categoria">
+                            <option value="Conceitos">Conceitos</option>
+                            <option value="Dogmas">Dogmas</option>
+                            <option value="Sagradas Escrituras">Sagradas Escrituras</option>
+                            <option value="Teologia">Teologia</option>
+                            <option value="Catequese">Catequese</option>
+                            <option value="Liturgia">Liturgia</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="conteudo">Conteúdo Completo</label>
-                    <textarea id="conteudo" name="conteudo" placeholder="Anotações detalhadas..."></textarea>
-                </div>
+                    <div class="form-group">
+                        <label for="resumo">Resumo / Introdução</label>
+                        <input type="text" id="resumo" name="resumo" placeholder="Pequena síntese do tema...">
+                    </div>
 
-                <div class="form-group">
-                    <label for="tags">Tags (separadas por vírgula)</label>
-                    <input type="text" id="tags" name="tags" placeholder="ex: Fe, Graca, Oracao">
-                </div>
+                    <div class="form-group">
+                        <label for="conteudo">Conteúdo Completo</label>
+                        <textarea id="conteudo" name="conteudo" placeholder="Anotações detalhadas..."></textarea>
+                    </div>
 
-                <div class="form-group">
-                    <label for="referencias">Referências (vírgula)</label>
-                    <input type="text" id="referencias" name="referencias" placeholder="ex: CIC 1802, Mt 5,1">
-                </div>
+                    <div class="form-group">
+                        <label for="tags">Tags (separadas por vírgula)</label>
+                        <input type="text" id="tags" name="tags" placeholder="ex: Fe, Graca, Oracao">
+                    </div>
 
-                <div class="form-group">
-                    <label for="arquivos">Anexar Arquivo (PDF / Imagem)</label>
-                    <input type="file" id="arquivos" name="arquivos" multiple>
-                </div>
+                    <div class="form-group">
+                        <label for="referencias">Referências (vírgula)</label>
+                        <input type="text" id="referencias" name="referencias" placeholder="ex: CIC 1802, Mt 5,1">
+                    </div>
 
-                <button type="submit" class="btn">Salvar Estudo</button>
-            </form>
+                    <div class="form-group">
+                        <label for="arquivos">Anexar Arquivo (PDF / Imagem)</label>
+                        <input type="file" id="arquivos" name="arquivos" multiple>
+                    </div>
 
-            <hr style="border-color: #334155; margin: 10px 0;">
+                    <button type="submit" class="btn">Salvar Estudo</button>
+                </form>
+            </div>
 
-            <h2>Laboratório</h2>
-            <a href="/pregacao" class="btn btn-secondary">Gerar Pregação com IA</a>
+            <!-- Aba 2: Abreviações Teológicas -->
+            <div id="tab-abreviacoes" class="tab-content">
+                <p style="font-size:0.8rem; color:#a89485; margin-bottom:10px;">Guia rápido de citação teológica e magisterial:</p>
+                <table class="table-abrev">
+                    <thead>
+                        <tr>
+                            <th>Abrev.</th>
+                            <th>Significado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><b>CIC</b></td><td>Catecismo da Igreja Católica</td></tr>
+                        <tr><td><b>DS</b></td><td>Denzinger-Hünermann</td></tr>
+                        <tr><td><b>LG</b></td><td>Lumen Gentium (Vaticano II)</td></tr>
+                        <tr><td><b>GS</b></td><td>Gaudium et Spes</td></tr>
+                        <tr><td><b>DV</b></td><td>Dei Verbum</td></tr>
+                        <tr><td><b>SC</b></td><td>Sacrosanctum Concilium</td></tr>
+                        <tr><td><b>CDC</b></td><td>Código de Direito Canônico</td></tr>
+                        <tr><td><b>Sum. Th.</b></td><td>Suma Teológica (S. Tomás)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <hr style="border-color: #3d2c23; margin: 10px 0;">
+
+            <!-- Botão de Acesso ao Laboratório de Pregação / Catequese -->
+            <a href="/pregacao" class="btn-pregacao">✝️ Montar Pregação & Catequese (IA)</a>
         </div>
 
         <!-- Conteúdo Principal -->
         <div class="main-content">
             <div class="header">
-                <h1>Acervo do Segundo Cérebro</h1>
-                <p>Estudos sincronizados e cadastrados no seu repositório teológico.</p>
+                <h1>Acervo Teológico</h1>
+                <p>Estudos teológicos e notas sincronizadas do Obsidian.</p>
             </div>
 
             <div class="cards-grid">
@@ -324,12 +438,28 @@
                 {% else %}
                     <div class="empty-state">
                         <h3>Nenhum estudo cadastrado ainda</h3>
-                        <p>Utilize o painel lateral para adicionar notas ou sincronizar do Obsidian.</p>
+                        <p>Utilize a aba lateral para adicionar notas ou sincronize com seu Obsidian.</p>
                     </div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
+    <!-- Script de Troca de Abas -->
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
 </body>
 </html>
