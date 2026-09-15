@@ -1,21 +1,19 @@
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 from flask import Flask, jsonify, render_template, request, send_from_directory
 from flask_cors import CORS
 from openai import OpenAI
 from werkzeug.utils import secure_filename
-from banco import conectar_banco
-from banco import db
+from banco import db, conectar_banco
 
-# Carrega as chaves do .env no PC
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# Lê a chave da NVIDIA do .env
+# Configuração da API NVIDIA / OpenAI
 NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
-
 ai_client = (
     OpenAI(
         base_url="https://integrate.api.nvidia.com/v1", api_key=NVIDIA_API_KEY
@@ -24,13 +22,11 @@ ai_client = (
     else None
 )
 
-app = Flask(__name__)
-CORS(app)
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-# Caminhos locais para o Obsidian (usados quando rodar localmente no PC)
+# Caminhos locais para o Obsidian (execução local)
 CAMINHO_VAULT_OBSIDIAN = os.getenv(
     "CAMINHO_OBSIDIAN",
     r"C:\Users\Thales Biondi\Desktop\segundo_cerebro_catolico\cerebro_catolico\Estudos"
@@ -40,15 +36,13 @@ PASTA_TEMPLATES = os.getenv(
     r"C:\Users\Thales Biondi\Desktop\segundo_cerebro_catolico\cerebro_catolico\Templates"
 )
 
-os.makedirs(UPLOADS_DIR, exist_ok=True)
 colecao = conectar_banco()
-
 
 
 def criar_nota_com_template(estudo, nome_template, arquivos_anexados):
     """Gera o arquivo Markdown do Obsidian localmente se a pasta existir."""
     if not os.path.exists(CAMINHO_VAULT_OBSIDIAN):
-        return  # Silenciosamente pula em ambiente de nuvem (Render)
+        return
 
     caminho_template = os.path.join(PASTA_TEMPLATES, nome_template) if nome_template else ""
     if os.path.exists(caminho_template):
@@ -89,14 +83,13 @@ def criar_nota_com_template(estudo, nome_template, arquivos_anexados):
 
 @app.route('/')
 def index():
-    # Busca todas as notas ordenadas pela data de criação
-    notas = list(db.estudos.find().sort("data_criacao", -1))
+    # Busca todas as notas cadastradas
+    notas = list(colecao.find().sort("data_criacao", -1))
     return render_template('index.html', notas=notas)
 
 
 @app.route("/pregacao")
 def pregacao():
-    # Página 2: Laboratório de Pregação, Condução e IA
     return render_template("pregacao.html")
 
 
@@ -104,16 +97,9 @@ def pregacao():
 def listar_templates():
     if not os.path.exists(PASTA_TEMPLATES):
         return jsonify({"templates": []}), 200
-    return (
-        jsonify(
-            {
-                "templates": [
-                    f for f in os.listdir(PASTA_TEMPLATES) if f.endswith(".md")
-                ]
-            }
-        ),
-        200,
-    )
+    return jsonify({
+        "templates": [f for f in os.listdir(PASTA_TEMPLATES) if f.endswith(".md")]
+    }), 200
 
 
 @app.route("/api/estudos", methods=["POST"])
@@ -125,21 +111,9 @@ def cadastrar_estudo():
         conteudo = request.form.get("conteudo", "")
         template_usado = request.form.get("template", "")
 
-        referencias = [
-            r.strip()
-            for r in request.form.get("referencias", "").split(",")
-            if r.strip()
-        ]
-        relacionados = [
-            r.strip()
-            for r in request.form.get("relacionados", "").split(",")
-            if r.strip()
-        ]
-        tags = [
-            t.strip()
-            for t in request.form.get("tags", "").split(",")
-            if t.strip()
-        ]
+        referencias = [r.strip() for r in request.form.get("referencias", "").split(",") if r.strip()]
+        relacionados = [r.strip() for r in request.form.get("relacionados", "").split(",") if r.strip()]
+        tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
 
         if not titulo:
             return jsonify({"erro": "O campo 'Título' é obrigatório."}), 400
@@ -150,13 +124,11 @@ def cadastrar_estudo():
                 filename = secure_filename(file.filename)
                 caminho = os.path.join(UPLOADS_DIR, filename)
                 file.save(caminho)
-                arquivos_salvos.append(
-                    {
-                        "nome": filename,
-                        "caminho": caminho.replace("\\", "/"),
-                        "url": f"/uploads/{filename}",
-                    }
-                )
+                arquivos_salvos.append({
+                    "nome": filename,
+                    "caminho": caminho.replace("\\", "/"),
+                    "url": f"/uploads/{filename}",
+                })
 
         doc = {
             "titulo": titulo,
@@ -168,25 +140,19 @@ def cadastrar_estudo():
             "tags": tags,
             "arquivos": arquivos_salvos,
             "template_usado": template_usado,
+            "origem": "Web",
+            "data_criacao": datetime.utcnow()
         }
 
         res = colecao.insert_one(doc)
-        
-        # Tenta criar a nota no Obsidian localmente
+
         try:
             criar_nota_com_template(doc, template_usado, arquivos_salvos)
         except Exception:
-            pass  # Ignora se falhar no servidor da nuvem
+            pass
 
-        return (
-            jsonify(
-                {
-                    "mensagem": "Cadastrado com sucesso!",
-                    "id": str(res.inserted_id),
-                }
-            ),
-            201,
-        )
+        return jsonify({"mensagem": "Cadastrado com sucesso!", "id": str(res.inserted_id)}), 201
+
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
 
@@ -202,16 +168,8 @@ def listar_estudos():
 
 @app.route("/api/gerar-pregacao", methods=["POST"])
 def gerar_pregacao_ia():
-    """Rota que envia o tema e as notas selecionadas para a IA da NVIDIA gerar o roteiro."""
     if not ai_client:
-        return (
-            jsonify(
-                {
-                    "erro": "Chave NVIDIA_API_KEY não configurada no servidor."
-                }
-            ),
-            400,
-        )
+        return jsonify({"erro": "Chave NVIDIA_API_KEY não configurada no servidor."}), 400
 
     dados = request.get_json() or {}
     tema = dados.get("tema", "")
