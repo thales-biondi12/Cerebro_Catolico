@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segundo Cérebro Católico — Cadastros & Acervo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-principal: #0d0e11;
+            --bg-card: #14161d;
+            --bg-input: #1c1f2a;
+            --borda: #2a2e3d;
+            --texto: #dcdfe7;
+            --texto-suave: #9ea4b5;
+            --ouro: #c9a054;
+            --destaque: #8c6239;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: var(--bg-principal); 
+            color: var(--texto); 
+            font-family: 'Lora', serif; 
+            padding: 15px; 
+            line-height: 1.6; 
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header { 
+            display: flex; 
+            flex-direction: row;
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 0; 
+            border-bottom: 2px solid var(--borda); 
+            margin-bottom: 20px; 
+            gap: 15px;
+        }
+        h1 { font-family: 'Cinzel', serif; color: var(--ouro); font-size: 1.6rem; }
+        
+        .btn-nav { 
+            background: var(--bg-card); 
+            border: 1px solid var(--ouro); 
+            color: var(--ouro); 
+            padding: 10px 16px; 
+            font-family: 'Cinzel', serif; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            transition: 0.2s; 
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-nav:hover { background: var(--ouro); color: #000; }
+
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+        }
+
+        .painel { 
+            background: var(--bg-card); 
+            border: 1px solid var(--borda); 
+            border-radius: 6px; 
+            padding: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+
+        h2 { 
+            font-family: 'Cinzel', serif; 
+            color: var(--ouro); 
+            font-size: 1.2rem; 
+            margin-bottom: 18px; 
+            border-bottom: 1px solid var(--borda); 
+            padding-bottom: 8px; 
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--ouro); }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border-radius: 4px; 
+            border: 1px solid var(--borda); 
+            background: var(--bg-input); 
+            color: var(--texto); 
+            font-family: 'Lora', serif; 
+            font-size: 0.95rem; 
+        }
+        textarea { resize: vertical; height: 110px; }
+
+        .row { display: flex; gap: 15px; } 
+        .row .form-group { flex: 1; }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--destaque); 
+            color: #fff; 
+            border: 1px solid var(--ouro); 
+            font-family: 'Cinzel', serif; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        button:hover { background: var(--ouro); color: #000; }
+
+        .card-estudo { 
+            background: var(--bg-input); 
+            border-left: 3px solid var(--ouro); 
+            padding: 12px 15px; 
+            margin-bottom: 12px; 
+            border-radius: 0 4px 4px 0; 
+        }
+        .card-estudo h4 { font-family: 'Cinzel', serif; color: var(--ouro); }
+        .tag { 
+            display: inline-block; 
+            background: var(--bg-principal); 
+            border: 1px solid var(--borda); 
+            color: var(--texto-suave); 
+            padding: 1px 6px; 
+            border-radius: 3px; 
+            font-size: 0.75rem; 
+            margin-right: 5px; 
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace; 
+        }
+        
+        .feedback { padding: 10px; border-radius: 4px; display: none; text-align: center; margin-top: 10px; }
+        .success { background: #1b382b; color: #85e3b2; } 
+        .error { background: #4a1521; color: #f38ba8; }
+
+        /* REGRAS RESPONSIVAS PARA CELULARES */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+            h1 { font-size: 1.4rem; }
+            .painel { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>✝️ SEGUNDO CÉREBRO CATÓLICO</h1>
+            <p style="font-style: italic; color: var(--texto-suave); font-size: 0.85rem;">Módulo 1: Cadastro & Documentação Teológica</p>
+        </div>
+        <a href="/pregacao" class="btn-nav">🎙️ Ir para Laboratório de Pregação →</a>
+    </header>
+
+    <div class="grid-2">
+        <section class="painel">
+            <h2>📜 Novo Registro Teológico</h2>
+            <form id="formEstudo" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="form-group">
+                        <label for="titulo">Título da Nota *</label>
+                        <input type="text" id="titulo" name="titulo" required placeholder="Ex: A Virtude da Fé">
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria">Categoria</label>
+                        <input type="text" id="categoria" name="categoria" placeholder="Ex: Catecismo, Teologia">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="template">Template Estrutural</label>
+                    <select id="template" name="template"><option value="">Carregando...</option></select>
+                </div>
+                <div class="form-group">
+                    <label for="resumo">Síntese / Tese Central</label>
+                    <input type="text" id="resumo" name="resumo" placeholder="Breve resumo doutrinal...">
+                </div>
+                <div class="form-group">
+                    <label for="conteudo">Conteúdo Denso</label>
+                    <textarea id="conteudo" name="conteudo" placeholder="Citações de Santos, trechos do CIC, comentários..."></textarea>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="referencias">Referências</label>
+                        <input type="text" id="referencias" name="referencias" placeholder="Ex: CIC 1814">
+                    </div>
+                    <div class="form-group">
+                        <label for="relacionados">Relacionados</label>
+                        <input type="text" id="relacionados" name="relacionados" placeholder="Ex: Graça, Oração">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="tags">Tags</label>
+                        <input type="text" id="tags" name="tags" placeholder="virtudes, graca">
+                    </div>
+                    <div class="form-group">
+                        <label for="arquivos">Anexos</label>
+                        <input type="file" id="arquivos" name="arquivos" multiple style="font-size: 0.8rem; padding: 6px;">
+                    </div>
+                </div>
+                <button type="submit">🛡️ Gravar e Sincronizar Obsidian</button>
+            </form>
+            <div id="feedback" class="feedback"></div>
+        </section>
+
+        <section class="painel">
+            <h2>📚 Acervo Cadastrado</h2>
+            <div id="listaEstudos" style="max-height: 520px; overflow-y: auto;">Carregando notas...</div>
+        </section>
+    </div>
+</div>
+
+<script>
+    async function carregarTemplates() {
+        try {
+            const res = await fetch('/api/templates');
+            const data = await res.json();
+            const select = document.getElementById('template');
+            select.innerHTML = '';
+            if (data.templates && data.templates.length > 0) {
+                data.templates.forEach(t => select.innerHTML += `<option value="${t}">${t}</option>`);
+            } else {
+                select.innerHTML = '<option value="">Padrão</option>';
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    async function carregarEstudos() {
+        try {
+            const res = await fetch('/api/estudos');
+            const data = await res.json();
+            const container = document.getElementById('listaEstudos');
+            container.innerHTML = '';
+
+            (data.estudos || []).slice().reverse().forEach(e => {
+                const tags = (e.tags || []).map(t => `<span class="tag">#${t}</span>`).join('');
+                container.innerHTML += `
+                    <div class="card-estudo">
+                        <h4>${e.titulo} <small style="color:var(--texto-suave); font-size:0.75rem;">[${e.categoria}]</small></h4>
+                        <p style="font-size:0.85rem; margin: 4px 0;">${e.resumo || ''}</p>
+                        <div>${tags}</div>
+                    </div>
+                `;
+            });
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    document.getElementById('formEstudo').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const feedback = document.getElementById('feedback');
+
+        try {
+            const res = await fetch('/api/estudos', { method: 'POST', body: formData });
+            const result = await res.json();
+            if (res.ok) {
+                feedback.className = 'feedback success';
+                feedback.innerText = '📜 Estudo gravado e nota gerada com sucesso!';
+                feedback.style.display = 'block';
+                e.target.reset();
+                carregarEstudos();
+            } else { throw new Error(result.erro); }
+        } catch (err) {
+            feedback.className = 'feedback error';
+            feedback.innerText = '❌ ' + err.message;
+            feedback.style.display = 'block';
+        }
+    });
+
+    carregarTemplates();
+    carregarEstudos();
+</script>
+
+</body>
+</html>

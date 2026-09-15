@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Segundo Cérebro Católico — Laboratório de Pregação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-principal: #0d0e11;
+            --bg-card: #14161d;
+            --bg-input: #1c1f2a;
+            --borda: #2a2e3d;
+            --texto: #dcdfe7;
+            --texto-suave: #9ea4b5;
+            --ouro: #c9a054;
+            --vinho: #4a1521;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            background-color: var(--bg-principal); 
+            color: var(--texto); 
+            font-family: 'Lora', serif; 
+            padding: 15px; 
+            line-height: 1.6; 
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header { 
+            display: flex; 
+            flex-direction: row;
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 0; 
+            border-bottom: 2px solid var(--borda); 
+            margin-bottom: 20px; 
+            gap: 15px;
+        }
+        h1 { font-family: 'Cinzel', serif; color: var(--ouro); font-size: 1.6rem; }
+        
+        .btn-nav { 
+            background: var(--bg-card); 
+            border: 1px solid var(--ouro); 
+            color: var(--ouro); 
+            padding: 10px 16px; 
+            font-family: 'Cinzel', serif; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            transition: 0.2s; 
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .btn-nav:hover { background: var(--ouro); color: #000; }
+
+        .grid-2 { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+        }
+
+        .painel { 
+            background: var(--bg-card); 
+            border: 1px solid var(--borda); 
+            border-radius: 6px; 
+            padding: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+
+        h2 { 
+            font-family: 'Cinzel', serif; 
+            color: var(--ouro); 
+            font-size: 1.2rem; 
+            margin-bottom: 18px; 
+            border-bottom: 1px solid var(--borda); 
+            padding-bottom: 8px; 
+        }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--ouro); }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border-radius: 4px; 
+            border: 1px solid var(--borda); 
+            background: var(--bg-input); 
+            color: var(--texto); 
+            font-family: 'Lora', serif; 
+            font-size: 0.95rem; 
+        }
+
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--vinho); 
+            color: #fff; 
+            border: 1px solid var(--ouro); 
+            font-family: 'Cinzel', serif; 
+            font-weight: bold; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+        button:hover { background: var(--ouro); color: #000; }
+
+        .busca-box { display: flex; gap: 10px; margin-bottom: 10px; }
+        .resultado-busca { 
+            max-height: 180px; 
+            overflow-y: auto; 
+            border: 1px solid var(--borda); 
+            border-radius: 4px; 
+            background: var(--bg-input); 
+            padding: 10px; 
+            margin-bottom: 15px; 
+        }
+        .item-resultado { 
+            padding: 8px 0; 
+            border-bottom: 1px solid var(--borda); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 10px;
+        }
+        
+        .btn-vincular { width: auto; padding: 4px 10px; font-size: 0.75rem; margin: 0; background: var(--vinho); white-space: nowrap; }
+
+        .esboco-area { 
+            background: #090a0d; 
+            border: 1px dashed var(--ouro); 
+            padding: 15px; 
+            border-radius: 4px; 
+            min-height: 200px; 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.85rem; 
+            white-space: pre-wrap; 
+        }
+        .resultado-ia { 
+            background: #090a0d; 
+            border: 1px solid var(--ouro); 
+            padding: 15px; 
+            border-radius: 4px; 
+            min-height: 220px; 
+            font-family: 'Lora', serif; 
+            font-size: 0.9rem; 
+            white-space: pre-wrap; 
+        }
+
+        /* REGRAS RESPONSIVAS PARA CELULARES */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            h1 { font-size: 1.4rem; }
+            .painel { padding: 15px; }
+            .busca-box { flex-direction: column; }
+            .busca-box button { width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div>
+            <h1>🎙️ LABORATÓRIO DE PREGAÇÃO & IA</h1>
+            <p style="font-style: italic; color: var(--texto-suave); font-size: 0.85rem;">Módulo 2: Pesquisa Cruzada, Conexões e Assistência Homilética</p>
+        </div>
+        <a href="/" class="btn-nav">← Voltar aos Estudos</a>
+    </header>
+
+    <div class="grid-2">
+        <!-- PAINEL DE MONTAGEM MANUAL -->
+        <section class="painel">
+            <h2>🔍 Pesquisar & Cruzar Estudos</h2>
+            
+            <div class="form-group">
+                <div class="busca-box">
+                    <input type="text" id="campoBusca" placeholder="Ex: Oração, Maria, Cruz, Sacramento...">
+                    <button type="button" onclick="pesquisarEstudos()" style="width: 100px;">Buscar</button>
+                </div>
+            </div>
+
+            <div class="resultado-busca" id="resultadoBusca">
+                <small style="color: var(--texto-suave);">Busque termos para conectar suas notas salvas...</small>
+            </div>
+
+            <h2>📝 Roteiro de Condução Manual</h2>
+            <textarea id="esbocoManual" class="esboco-area" placeholder="Clique em '+ Vincular' nos estudos pesquisados para trazer os links para este bloco..."></textarea>
+            <button type="button" onclick="copiarTexto('esbocoManual')" style="margin-top: 10px;">📋 Copiar Roteiro Manual</button>
+        </section>
+
+        <!-- PAINEL COM ASSISTENTE DE IA -->
+        <section class="painel">
+            <h2>✨ Gerador Homilético com IA Gemini</h2>
+            
+            <div class="form-group">
+                <label>Tema Principal</label>
+                <input type="text" id="iaTema" placeholder="Ex: A Virtude Teologal da Esperança na Tribulação">
+            </div>
+
+            <div class="form-group">
+                <label>Público-Alvo / Contexto</label>
+                <select id="iaPublico">
+                    <option value="Jovens / Crisma">Jovens / Crisma</option>
+                    <option value="Catequese de Adultos">Catequese de Adultos</option>
+                    <option value="Grupo de Oração">Grupo de Oração</option>
+                    <option value="Comunidade em Missa">Comunidade em Missa</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Notas de Apoio a Enviar para a IA</label>
+                <div id="checkEstudos" style="max-height: 130px; overflow-y: auto; background: var(--bg-input); padding: 8px; border-radius: 4px; border: 1px solid var(--borda);">
+                    Carregando notas...
+                </div>
+            </div>
+
+            <button type="button" onclick="gerarComIA()">✨ Gerar Estrutura Teológica com IA</button>
+
+            <h2 style="margin-top: 20px;">📜 Sugestão da IA</h2>
+            <div id="resultadoIA" class="resultado-ia">O roteiro gerado pela IA aparecerá aqui...</div>
+            <button type="button" onclick="copiarTexto('resultadoIA')" style="margin-top: 10px;">📋 Copiar Sugestão da IA</button>
+        </section>
+    </div>
+</div>
+
+<script>
+    let estudosGlobais = [];
+
+    async function carregarEstudos() {
+        try {
+            const res = await fetch('/api/estudos');
+            const data = await res.json();
+            estudosGlobais = data.estudos || [];
+            
+            const checkContainer = document.getElementById('checkEstudos');
+            checkContainer.innerHTML = '';
+
+            if (estudosGlobais.length === 0) {
+                checkContainer.innerHTML = '<small style="color:var(--texto-suave);">Nenhum estudo cadastrado.</small>';
+                return;
+            }
+
+            estudosGlobais.forEach((e, idx) => {
+                checkContainer.innerHTML += `
+                    <div style="margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" value="${e.titulo}: ${e.resumo}" id="chk_${idx}" style="width: auto;">
+                        <label for="chk_${idx}" style="margin: 0; color: var(--texto); font-family: 'Lora'; font-size: 0.85rem; cursor: pointer;">${e.titulo}</label>
+                    </div>
+                `;
+            });
+        } catch(e) {
+            console.error(e);
+        }
+    }
+
+    function pesquisarEstudos() {
+        const termo = document.getElementById('campoBusca').value.toLowerCase().trim();
+        const container = document.getElementById('resultadoBusca');
+        container.innerHTML = '';
+
+        if (!termo) return;
+
+        const filtrados = estudosGlobais.filter(e => 
+            e.titulo.toLowerCase().includes(termo) ||
+            (e.resumo && e.resumo.toLowerCase().includes(termo)) ||
+            (e.conteudo && e.conteudo.toLowerCase().includes(termo))
+        );
+
+        if (filtrados.length === 0) {
+            container.innerHTML = '<small style="color: var(--texto-suave);">Nenhum estudo encontrado.</small>';
+            return;
+        }
+
+        filtrados.forEach(e => {
+            container.innerHTML += `
+                <div class="item-resultado">
+                    <div>
+                        <strong>${e.titulo}</strong> <br>
+                        <small style="color: var(--texto-suave);">${e.categoria}</small>
+                    </div>
+                    <button class="btn-vincular" onclick="vincularManual('${e.titulo}', '${(e.referencias || []).join(', ')}')">+ Vincular</button>
+                </div>
+            `;
+        });
+    }
+
+    function vincularManual(titulo, referencias) {
+        const area = document.getElementById('esbocoManual');
+        area.value += `\n📌 PONTO: [[${titulo}]]\n📖 REFERÊNCIAS: ${referencias || 'N/A'}\n- \n-----------------------------------\n`;
+    }
+
+    async function gerarComIA() {
+        const tema = document.getElementById('iaTema').value;
+        const publico = document.getElementById('iaPublico').value;
+        const divResultado = document.getElementById('resultadoIA');
+
+        if (!tema) { alert('Digite o tema da pregação.'); return; }
+
+        const notas = [];
+        document.querySelectorAll('#checkEstudos input[type="checkbox"]:checked').forEach(cb => notas.push(cb.value));
+
+        divResultado.innerText = '⏳ Gerando estrutura teológica com a IA Gemini...';
+
+        try {
+            const res = await fetch('/api/gerar-pregacao', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tema, publico, notas })
+            });
+
+            const data = await res.json();
+            if (res.ok) { divResultado.innerText = data.roteiro; } 
+            else { divResultado.innerText = '❌ Erro: ' + data.erro; }
+        } catch (err) {
+            divResultado.innerText = '❌ Erro de conexão com o servidor.';
+        }
+    }
+
+    function copiarTexto(elementId) {
+        const el = document.getElementById(elementId);
+        const texto = el.value || el.innerText;
+        navigator.clipboard.writeText(texto);
+        alert('Copiado com sucesso!');
+    }
+
+    carregarEstudos();
+</script>
+
+</body>
+</html>
