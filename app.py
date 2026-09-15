@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-from flask import Flask, jsonify, render_template, request, send_from_directory
+from flask import Flask, jsonify, render_template, request, send_from_directory, redirect, url_for
 from flask_cors import CORS
+from bson.objectid import ObjectId
 from openai import OpenAI
 from werkzeug.utils import secure_filename
 from banco import db, conectar_banco
@@ -151,7 +152,7 @@ def cadastrar_estudo():
         except Exception:
             pass
 
-        return jsonify({"mensagem": "Cadastrado com sucesso!", "id": str(res.inserted_id)}), 201
+        return redirect(url_for('index'))
 
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
@@ -162,6 +163,74 @@ def listar_estudos():
     try:
         estudos = list(colecao.find({}, {"_id": 0}))
         return jsonify({"estudos": estudos}), 200
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+
+@app.route("/api/estudos/<estudo_id>", methods=["GET"])
+def obter_estudo(estudo_id):
+    """Busca os dados de uma nota específica pelo ID para carregar no Modal de Edição."""
+    try:
+        estudo = colecao.find_one({"_id": ObjectId(estudo_id)})
+        if not estudo:
+            return jsonify({"erro": "Estudo não encontrado"}), 404
+
+        return jsonify({
+            "id": str(estudo["_id"]),
+            "titulo": estudo.get("titulo", ""),
+            "categoria": estudo.get("categoria", "Conceitos"),
+            "resumo": estudo.get("resumo", ""),
+            "conteudo": estudo.get("conteudo", ""),
+            "tags": ", ".join(estudo.get("tags", [])),
+            "referencias": ", ".join(estudo.get("referencias", []))
+        }), 200
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+
+@app.route("/api/estudos/<estudo_id>/editar", methods=["POST"])
+def editar_estudo(estudo_id):
+    """Atualiza a nota no MongoDB e reescreve a nota .md no vault local."""
+    try:
+        titulo = request.form.get("titulo")
+        categoria = request.form.get("categoria", "Conceitos")
+        resumo = request.form.get("resumo", "")
+        conteudo = request.form.get("conteudo", "")
+        tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
+        referencias = [r.strip() for r in request.form.get("referencias", "").split(",") if r.strip()]
+
+        # 1. Atualiza no MongoDB
+        colecao.update_one(
+            {"_id": ObjectId(estudo_id)},
+            {
+                "$set": {
+                    "titulo": titulo,
+                    "categoria": categoria,
+                    "resumo": resumo,
+                    "conteudo": conteudo,
+                    "tags": tags,
+                    "referencias": referencias
+                }
+            }
+        )
+
+        # 2. Atualiza/Reescreve o arquivo .md no Obsidian se a pasta existir
+        if os.path.exists(CAMINHO_VAULT_OBSIDIAN):
+            pasta_destino = os.path.join(CAMINHO_VAULT_OBSIDIAN, categoria)
+            os.makedirs(pasta_destino, exist_ok=True)
+            
+            caminho_arquivo = os.path.join(pasta_destino, f"{titulo}.md")
+            
+            tags_fmt = " ".join([f"#{t}" for t in tags])
+            refs_fmt = "\n".join([f"- {r}" for r in referencias])
+            
+            conteudo_md = f"# {titulo}\n\n## 📖 O que é?\n{resumo}\n\n## ✝️ Conteúdo\n{conteudo}\n\n## 📚 Referências\n{refs_fmt}\n\n## 🏷️ Tags\n{tags_fmt}"
+            
+            with open(caminho_arquivo, "w", encoding="utf-8") as f:
+                f.write(conteudo_md)
+
+        return redirect(url_for('index'))
+
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
 

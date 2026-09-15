@@ -146,7 +146,6 @@
             background-color: #d4af37;
         }
 
-        /* Botão de Destaque para Montar Pregação / Catequese */
         .btn-pregacao {
             background-color: #d4af37;
             color: #1c130e;
@@ -300,19 +299,67 @@
             color: #8c7868;
         }
 
-        .tag-origem {
-            background-color: #e2d3b7;
-            color: #3b281c;
-            padding: 2px 8px;
+        .btn-edit-card {
+            background-color: #3b281c;
+            color: #d4af37;
+            border: 1px solid #c5a059;
+            padding: 4px 10px;
             border-radius: 4px;
-            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
-        .empty-state {
-            text-align: center;
-            color: #8c7868;
-            grid-column: 1 / -1;
-            padding: 50px 0;
+        .btn-edit-card:hover {
+            background-color: #c5a059;
+            color: #1c130e;
+        }
+
+        /* Modal de Edição */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: #1c130e;
+            color: #f3e8d3;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #c5a059;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #3d2c23;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: #d4af37;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #c5a059;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -402,7 +449,6 @@
 
             <hr style="border-color: #3d2c23; margin: 10px 0;">
 
-            <!-- Botão de Acesso ao Laboratório de Pregação / Catequese -->
             <a href="/pregacao" class="btn-pregacao">✝️ Montar Pregação & Catequese (IA)</a>
         </div>
 
@@ -431,8 +477,8 @@
                         </div>
 
                         <div class="card-footer">
-                            <span class="tag-origem">{{ nota.origem if nota.origem else 'Obsidian / Web' }}</span>
                             <span>{{ nota.data_criacao.strftime('%d/%m/%Y') if nota.data_criacao else '' }}</span>
+                            <button class="btn-edit-card" onclick="abrirModalEdicao('{{ nota.id }}')">✏️ Editar .md</button>
                         </div>
                     </div>
                 {% else %}
@@ -445,7 +491,56 @@
         </div>
     </div>
 
-    <!-- Script de Troca de Abas -->
+    <!-- Modal de Edição -->
+    <div id="modalEdicao" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Nota / Markdown (.md)</h3>
+                <button class="close-modal" onclick="fecharModalEdicao()">&times;</button>
+            </div>
+            <form id="formEdicao" method="POST">
+                <div class="form-group">
+                    <label for="edit-titulo">Título</label>
+                    <input type="text" id="edit-titulo" name="titulo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-categoria">Categoria</label>
+                    <select id="edit-categoria" name="categoria">
+                        <option value="Conceitos">Conceitos</option>
+                        <option value="Dogmas">Dogmas</option>
+                        <option value="Sagradas Escrituras">Sagradas Escrituras</option>
+                        <option value="Teologia">Teologia</option>
+                        <option value="Catequese">Catequese</option>
+                        <option value="Liturgia">Liturgia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-resumo">Resumo / Introdução</label>
+                    <input type="text" id="edit-resumo" name="resumo">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-conteudo">Conteúdo (Markdown / Texto)</label>
+                    <textarea id="edit-conteudo" name="conteudo" style="height: 180px;"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-tags">Tags (separadas por vírgula)</label>
+                    <input type="text" id="edit-tags" name="tags">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-referencias">Referências (vírgula)</label>
+                    <input type="text" id="edit-referencias" name="referencias">
+                </div>
+
+                <button type="submit" class="btn">Salvar Alterações no .md</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         function openTab(evt, tabName) {
             var i, tabcontent, tablinks;
@@ -459,6 +554,26 @@
             }
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
+        }
+
+        function abrirModalEdicao(id) {
+            fetch(`/api/estudos/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('edit-titulo').value = data.titulo || '';
+                    document.getElementById('edit-categoria').value = data.categoria || 'Teologia';
+                    document.getElementById('edit-resumo').value = data.resumo || '';
+                    document.getElementById('edit-conteudo').value = data.conteudo || '';
+                    document.getElementById('edit-tags').value = data.tags || '';
+                    document.getElementById('edit-referencias').value = data.referencias || '';
+
+                    document.getElementById('formEdicao').action = `/api/estudos/${id}/editar`;
+                    document.getElementById('modalEdicao').style.display = 'flex';
+                });
+        }
+
+        function fecharModalEdicao() {
+            document.getElementById('modalEdicao').style.display = 'none';
         }
     </script>
 </body>
