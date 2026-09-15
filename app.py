@@ -86,10 +86,14 @@ def criar_nota_com_template(estudo, nome_template, arquivos_anexados):
         f.write(conteudo_final)
 
 
-@app.route("/")
+@app.route('/')
 def index():
-    # Página 1: Cadastro e Acervo de Estudos
-    return render_template("index.html")
+    # Busca todas as notas cadastradas no MongoDB Atlas
+    # Altere 'estudos' para o nome exato da sua coleção, se for diferente
+    notas = list(db.estudos.find().sort("data_criacao", -1))
+    
+    # Envia a lista de 'notas' para a página index.html
+    return render_template('index.html', notas=notas)
 
 
 @app.route("/pregacao")

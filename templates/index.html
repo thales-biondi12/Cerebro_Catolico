@@ -3,291 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Segundo Cérebro Católico — Cadastros & Acervo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+    <title>Segundo Cérebro Católica</title>
     <style>
-        :root {
-            --bg-principal: #0d0e11;
-            --bg-card: #14161d;
-            --bg-input: #1c1f2a;
-            --borda: #2a2e3d;
-            --texto: #dcdfe7;
-            --texto-suave: #9ea4b5;
-            --ouro: #c9a054;
-            --destaque: #8c6239;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            background-color: var(--bg-principal); 
-            color: var(--texto); 
-            font-family: 'Lora', serif; 
-            padding: 15px; 
-            line-height: 1.6; 
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        header { 
-            display: flex; 
-            flex-direction: row;
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px 0; 
-            border-bottom: 2px solid var(--borda); 
-            margin-bottom: 20px; 
-            gap: 15px;
+        /* Sidebar / Painel Lateral */
+        .sidebar {
+            width: 320px;
+            background-color: #1e293b;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
-        h1 { font-family: 'Cinzel', serif; color: var(--ouro); font-size: 1.6rem; }
-        
-        .btn-nav { 
-            background: var(--bg-card); 
-            border: 1px solid var(--ouro); 
-            color: var(--ouro); 
-            padding: 10px 16px; 
-            font-family: 'Cinzel', serif; 
-            text-decoration: none; 
-            border-radius: 4px; 
-            transition: 0.2s; 
-            font-weight: bold;
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
             font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background-color: #0f172a;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: #475569;
             text-align: center;
-            white-space: nowrap;
-        }
-        .btn-nav:hover { background: var(--ouro); color: #000; }
-
-        .grid-2 { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 20px; 
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
         }
 
-        .painel { 
-            background: var(--bg-card); 
-            border: 1px solid var(--borda); 
-            border-radius: 6px; 
-            padding: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        .btn-secondary:hover {
+            background-color: #334155;
         }
 
-        h2 { 
-            font-family: 'Cinzel', serif; 
-            color: var(--ouro); 
-            font-size: 1.2rem; 
-            margin-bottom: 18px; 
-            border-bottom: 1px solid var(--borda); 
-            padding-bottom: 8px; 
+        /* Conteúdo Principal */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
         }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-family: 'Cinzel', serif; font-size: 0.85rem; color: var(--ouro); }
-        input, select, textarea { 
-            width: 100%; 
-            padding: 10px 12px; 
-            border-radius: 4px; 
-            border: 1px solid var(--borda); 
-            background: var(--bg-input); 
-            color: var(--texto); 
-            font-family: 'Lora', serif; 
-            font-size: 0.95rem; 
+        .header {
+            margin-bottom: 25px;
         }
-        textarea { resize: vertical; height: 110px; }
 
-        .row { display: flex; gap: 15px; } 
-        .row .form-group { flex: 1; }
-
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            background: var(--destaque); 
-            color: #fff; 
-            border: 1px solid var(--ouro); 
-            font-family: 'Cinzel', serif; 
-            font-weight: bold; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            transition: 0.2s; 
+        .header h1 {
+            font-size: 1.8rem;
+            color: #0f172a;
         }
-        button:hover { background: var(--ouro); color: #000; }
 
-        .card-estudo { 
-            background: var(--bg-input); 
-            border-left: 3px solid var(--ouro); 
-            padding: 12px 15px; 
-            margin-bottom: 12px; 
-            border-radius: 0 4px 4px 0; 
+        .header p {
+            color: #64748b;
+            font-size: 0.95rem;
         }
-        .card-estudo h4 { font-family: 'Cinzel', serif; color: var(--ouro); }
-        .tag { 
-            display: inline-block; 
-            background: var(--bg-principal); 
-            border: 1px solid var(--borda); 
-            color: var(--texto-suave); 
-            padding: 1px 6px; 
-            border-radius: 3px; 
-            font-size: 0.75rem; 
-            margin-right: 5px; 
-            margin-top: 4px;
-            font-family: 'JetBrains Mono', monospace; 
-        }
-        
-        .feedback { padding: 10px; border-radius: 4px; display: none; text-align: center; margin-top: 10px; }
-        .success { background: #1b382b; color: #85e3b2; } 
-        .error { background: #4a1521; color: #f38ba8; }
 
-        /* REGRAS RESPONSIVAS PARA CELULARES */
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-            .row {
-                flex-direction: column;
-                gap: 0;
-            }
-            h1 { font-size: 1.4rem; }
-            .painel { padding: 15px; }
+        /* Grid de Cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: #475569;
+            line-height: 1.4;
+            white-space: pre-line;
+            max-height: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 15px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 10px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .tag-origem {
+            background-color: #e2e8f0;
+            color: #334155;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #94a3b8;
+            grid-column: 1 / -1;
+            padding: 50px 0;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div>
-            <h1>✝️ SEGUNDO CÉREBRO CATÓLICO</h1>
-            <p style="font-style: italic; color: var(--texto-suave); font-size: 0.85rem;">Módulo 1: Cadastro & Documentação Teológica</p>
-        </div>
-        <a href="/pregacao" class="btn-nav">🎙️ Ir para Laboratório de Pregação →</a>
-    </header>
+    <!-- Sidebar: Criar Nota & Navegação -->
+    <div class="sidebar">
+        <h2>Adicionar Estudo</h2>
+        <form action="/salvar" method="POST" class="form-group">
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" name="titulo" placeholder="Ex: Passagem de Mateus 5" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="conteudo">Conteúdo / Anotações</label>
+                <textarea id="conteudo" name="conteudo" placeholder="Digite aqui o resumo do estudo..." required></textarea>
+            </div>
 
-    <div class="grid-2">
-        <section class="painel">
-            <h2>📜 Novo Registro Teológico</h2>
-            <form id="formEstudo" enctype="multipart/form-data">
-                <div class="row">
-                    <div class="form-group">
-                        <label for="titulo">Título da Nota *</label>
-                        <input type="text" id="titulo" name="titulo" required placeholder="Ex: A Virtude da Fé">
-                    </div>
-                    <div class="form-group">
-                        <label for="categoria">Categoria</label>
-                        <input type="text" id="categoria" name="categoria" placeholder="Ex: Catecismo, Teologia">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="template">Template Estrutural</label>
-                    <select id="template" name="template"><option value="">Carregando...</option></select>
-                </div>
-                <div class="form-group">
-                    <label for="resumo">Síntese / Tese Central</label>
-                    <input type="text" id="resumo" name="resumo" placeholder="Breve resumo doutrinal...">
-                </div>
-                <div class="form-group">
-                    <label for="conteudo">Conteúdo Denso</label>
-                    <textarea id="conteudo" name="conteudo" placeholder="Citações de Santos, trechos do CIC, comentários..."></textarea>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="referencias">Referências</label>
-                        <input type="text" id="referencias" name="referencias" placeholder="Ex: CIC 1814">
-                    </div>
-                    <div class="form-group">
-                        <label for="relacionados">Relacionados</label>
-                        <input type="text" id="relacionados" name="relacionados" placeholder="Ex: Graça, Oração">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="tags">Tags</label>
-                        <input type="text" id="tags" name="tags" placeholder="virtudes, graca">
-                    </div>
-                    <div class="form-group">
-                        <label for="arquivos">Anexos</label>
-                        <input type="file" id="arquivos" name="arquivos" multiple style="font-size: 0.8rem; padding: 6px;">
-                    </div>
-                </div>
-                <button type="submit">🛡️ Gravar e Sincronizar Obsidian</button>
-            </form>
-            <div id="feedback" class="feedback"></div>
-        </section>
+            <button type="submit" class="btn">Salvar no Banco</button>
+        </form>
 
-        <section class="painel">
-            <h2>📚 Acervo Cadastrado</h2>
-            <div id="listaEstudos" style="max-height: 520px; overflow-y: auto;">Carregando notas...</div>
-        </section>
+        <hr style="border-color: #334155; margin: 10px 0;">
+
+        <h2>Navegação</h2>
+        <a href="/pregacao" class="btn btn-secondary">Gerar Pregação com IA</a>
     </div>
-</div>
 
-<script>
-    async function carregarTemplates() {
-        try {
-            const res = await fetch('/api/templates');
-            const data = await res.json();
-            const select = document.getElementById('template');
-            select.innerHTML = '';
-            if (data.templates && data.templates.length > 0) {
-                data.templates.forEach(t => select.innerHTML += `<option value="${t}">${t}</option>`);
-            } else {
-                select.innerHTML = '<option value="">Padrão</option>';
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    }
+    <!-- Conteúdo Principal: Lista de Notas -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Acervo de Estudos</h1>
+            <p>Todas as notas sincronizadas do Obsidian e salvas manualmente.</p>
+        </div>
 
-    async function carregarEstudos() {
-        try {
-            const res = await fetch('/api/estudos');
-            const data = await res.json();
-            const container = document.getElementById('listaEstudos');
-            container.innerHTML = '';
-
-            (data.estudos || []).slice().reverse().forEach(e => {
-                const tags = (e.tags || []).map(t => `<span class="tag">#${t}</span>`).join('');
-                container.innerHTML += `
-                    <div class="card-estudo">
-                        <h4>${e.titulo} <small style="color:var(--texto-suave); font-size:0.75rem;">[${e.categoria}]</small></h4>
-                        <p style="font-size:0.85rem; margin: 4px 0;">${e.resumo || ''}</p>
-                        <div>${tags}</div>
+        <div class="cards-grid">
+            {% for nota in notas %}
+                <div class="card">
+                    <div>
+                        <h3>{{ nota.titulo }}</h3>
+                        <p>{{ nota.conteudo }}</p>
                     </div>
-                `;
-            });
-        } catch(e) {
-            console.error(e);
-        }
-    }
-
-    document.getElementById('formEstudo').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const feedback = document.getElementById('feedback');
-
-        try {
-            const res = await fetch('/api/estudos', { method: 'POST', body: formData });
-            const result = await res.json();
-            if (res.ok) {
-                feedback.className = 'feedback success';
-                feedback.innerText = '📜 Estudo gravado e nota gerada com sucesso!';
-                feedback.style.display = 'block';
-                e.target.reset();
-                carregarEstudos();
-            } else { throw new Error(result.erro); }
-        } catch (err) {
-            feedback.className = 'feedback error';
-            feedback.innerText = '❌ ' + err.message;
-            feedback.style.display = 'block';
-        }
-    });
-
-    carregarTemplates();
-    carregarEstudos();
-</script>
+                    <div class="card-footer">
+                        <span class="tag-origem">{{ nota.origem if nota.origem else 'Manual' }}</span>
+                        <span>{{ nota.data_criacao.strftime('%d/%m/%Y') if nota.data_criacao else '' }}</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>Nenhum estudo encontrado</h3>
+                    <p>Rode o script do Obsidian ou insira um novo estudo pelo painel lateral.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
 </body>
 </html>
