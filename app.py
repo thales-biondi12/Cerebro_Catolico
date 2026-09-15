@@ -5,6 +5,7 @@ from flask_cors import CORS
 from openai import OpenAI
 from werkzeug.utils import secure_filename
 from banco import conectar_banco
+from banco import db
 
 # Carrega as chaves do .env no PC
 load_dotenv()
@@ -88,11 +89,8 @@ def criar_nota_com_template(estudo, nome_template, arquivos_anexados):
 
 @app.route('/')
 def index():
-    # Busca todas as notas cadastradas no MongoDB Atlas
-    # Altere 'estudos' para o nome exato da sua coleção, se for diferente
+    # Busca todas as notas ordenadas pela data de criação
     notas = list(db.estudos.find().sort("data_criacao", -1))
-    
-    # Envia a lista de 'notas' para a página index.html
     return render_template('index.html', notas=notas)
 
 
