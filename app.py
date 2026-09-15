@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOADS_DIR = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 
-# Caminhos locais para o Obsidian (execução local)
+# Caminhos locais para o Obsidian
 CAMINHO_VAULT_OBSIDIAN = os.getenv(
     "CAMINHO_OBSIDIAN",
     r"C:\Users\Thales Biondi\Desktop\segundo_cerebro_catolico\cerebro_catolico\Estudos"
@@ -84,7 +84,7 @@ def criar_nota_com_template(estudo, nome_template, arquivos_anexados):
 
 @app.route('/')
 def index():
-    # Busca todas as notas cadastradas
+    # Busca todas as notas cadastradas para renderizar no HTML
     notas = list(colecao.find().sort("data_criacao", -1))
     return render_template('index.html', notas=notas)
 
@@ -145,7 +145,7 @@ def cadastrar_estudo():
             "data_criacao": datetime.utcnow()
         }
 
-        res = colecao.insert_one(doc)
+        colecao.insert_one(doc)
 
         try:
             criar_nota_com_template(doc, template_usado, arquivos_salvos)
@@ -161,7 +161,9 @@ def cadastrar_estudo():
 @app.route("/api/estudos", methods=["GET"])
 def listar_estudos():
     try:
-        estudos = list(colecao.find({}, {"_id": 0}))
+        estudos = list(colecao.find().sort("data_criacao", -1))
+        for est in estudos:
+            est["_id"] = str(est["_id"])
         return jsonify({"estudos": estudos}), 200
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
@@ -171,6 +173,9 @@ def listar_estudos():
 def obter_estudo(estudo_id):
     """Busca os dados de uma nota específica pelo ID para carregar no Modal de Edição."""
     try:
+        if not ObjectId.is_valid(estudo_id):
+            return jsonify({"erro": "ID inválido"}), 400
+
         estudo = colecao.find_one({"_id": ObjectId(estudo_id)})
         if not estudo:
             return jsonify({"erro": "Estudo não encontrado"}), 404
@@ -190,8 +195,11 @@ def obter_estudo(estudo_id):
 
 @app.route("/api/estudos/<estudo_id>/editar", methods=["POST"])
 def editar_estudo(estudo_id):
-    """Atualiza a nota no MongoDB e reescreve a nota .md no vault local."""
+    """Atualiza a nota no MongoDB e no Obsidian."""
     try:
+        if not ObjectId.is_valid(estudo_id):
+            return jsonify({"erro": "ID inválido"}), 400
+
         titulo = request.form.get("titulo")
         categoria = request.form.get("categoria", "Conceitos")
         resumo = request.form.get("resumo", "")
@@ -199,7 +207,6 @@ def editar_estudo(estudo_id):
         tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
         referencias = [r.strip() for r in request.form.get("referencias", "").split(",") if r.strip()]
 
-        # 1. Atualiza no MongoDB
         colecao.update_one(
             {"_id": ObjectId(estudo_id)},
             {
@@ -214,16 +221,13 @@ def editar_estudo(estudo_id):
             }
         )
 
-        # 2. Atualiza/Reescreve o arquivo .md no Obsidian se a pasta existir
         if os.path.exists(CAMINHO_VAULT_OBSIDIAN):
             pasta_destino = os.path.join(CAMINHO_VAULT_OBSIDIAN, categoria)
             os.makedirs(pasta_destino, exist_ok=True)
-            
             caminho_arquivo = os.path.join(pasta_destino, f"{titulo}.md")
             
             tags_fmt = " ".join([f"#{t}" for t in tags])
             refs_fmt = "\n".join([f"- {r}" for r in referencias])
-            
             conteudo_md = f"# {titulo}\n\n## 📖 O que é?\n{resumo}\n\n## ✝️ Conteúdo\n{conteudo}\n\n## 📚 Referências\n{refs_fmt}\n\n## 🏷️ Tags\n{tags_fmt}"
             
             with open(caminho_arquivo, "w", encoding="utf-8") as f:
