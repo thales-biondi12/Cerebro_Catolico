@@ -40,6 +40,18 @@ PASTA_TEMPLATES = os.getenv(
 colecao = conectar_banco()
 
 
+def serializar_estudo(estudo):
+    """Converte campos do MongoDB para tipos seguros em JSON."""
+    estudo = dict(estudo)
+    estudo["_id"] = str(estudo["_id"])
+
+    data_criacao = estudo.get("data_criacao")
+    if isinstance(data_criacao, datetime):
+        estudo["data_criacao"] = data_criacao.isoformat()
+
+    return estudo
+
+
 def criar_nota_com_template(estudo, nome_template, arquivos_anexados):
     """Gera o arquivo Markdown do Obsidian localmente se a pasta existir."""
     if not os.path.exists(CAMINHO_VAULT_OBSIDIAN):
@@ -161,9 +173,7 @@ def cadastrar_estudo():
 @app.route("/api/estudos", methods=["GET"])
 def listar_estudos():
     try:
-        estudos = list(colecao.find().sort("data_criacao", -1))
-        for est in estudos:
-            est["_id"] = str(est["_id"])
+        estudos = [serializar_estudo(est) for est in colecao.find().sort("data_criacao", -1)]
         return jsonify({"estudos": estudos}), 200
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
@@ -245,9 +255,12 @@ def gerar_pregacao_ia():
         return jsonify({"erro": "Chave NVIDIA_API_KEY não configurada no servidor."}), 400
 
     dados = request.get_json() or {}
-    tema = dados.get("tema", "")
+    tema = dados.get("tema", "").strip()
     publico = dados.get("publico", "Geral")
     notas_base = dados.get("notas", [])
+
+    if not tema:
+        return jsonify({"erro": "Informe o tema da pregação."}), 400
 
     prompt = f"""
 Você é um assistente teológico católico especialista em homilética, catequese e oratória sagrada.
@@ -268,7 +281,7 @@ Estruture a resposta no seguinte formato Markdown:
 
     try:
         completion = ai_client.chat.completions.create(
-            model="meta/muse-glimmer-30b",
+            model=os.getenv("NVIDIA_MODEL", "meta/muse-glimmer-30b"),
             messages=[{"role": "user", "content": prompt}],
             temperature=1,
             top_p=0.95,
@@ -278,7 +291,11 @@ Estruture a resposta no seguinte formato Markdown:
         roteiro = completion.choices[0].message.content
         return jsonify({"roteiro": roteiro}), 200
     except Exception as e:
-        return jsonify({"erro": str(e)}), 500
+        app.logger.exception("Erro ao gerar pregação com IA")
+        return jsonify({
+            "erro": "Não foi possível gerar a pregação agora. Verifique a chave NVIDIA_API_KEY, o modelo configurado e a conexão com a API.",
+            "detalhe": str(e),
+        }), 502
 
 
 @app.route("/uploads/<filename>")
