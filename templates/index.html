@@ -86,11 +86,14 @@
                         <p class="text-slate-400 text-sm mt-1 line-clamp-3">{{ nota.resumo }}</p>
                     </div>
 
-                    <div class="pt-3 border-t border-slate-700/50 flex justify-end">
-                        <button onclick="abrirModalEdicao('{{ nota._id|string }}')" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-lg text-sm transition">
-                            ✏️ Editar
-                        </button>
-                    </div>
+                        <div class="pt-3 border-t border-slate-700/50 flex justify-end gap-2">
+                            <button onclick="abrirModalVisualizacao('{{ nota._id|string }}')" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-lg text-sm transition">
+                                👁️ Ver
+                            </button>
+                            <button onclick="abrirModalEdicao('{{ nota._id|string }}')" class="bg-slate-700 hover:bg-slate-600 text-amber-400 px-3 py-1.5 rounded-lg text-sm transition">
+                                ✏️ Editar
+                            </button>
+                        </div>
                 </div>
                 {% else %}
                 <p class="text-slate-500 col-span-full">Nenhum estudo cadastrado ainda.</p>
@@ -100,9 +103,51 @@
 
     </div>
 
+    <!-- Modal de Visualização -->
+    <div id="modal-visualizacao" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-xl p-8 max-w-4xl w-full border border-slate-700 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                <h3 id="view-titulo" class="text-3xl font-bold text-amber-500">Visualizar Estudo</h3>
+                <div class="flex gap-3">
+                    <button onclick="abrirModalEdicaoDesdeVisao()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg font-medium transition text-sm">
+                        ✏️ Editar
+                    </button>
+                    <button onclick="fecharModalVisualizacao()" class="text-slate-400 hover:text-white text-2xl">&times;</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 space-y-6">
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-500 font-bold">Conteúdo</label>
+                        <div id="view-conteudo" class="text-slate-200 text-lg leading-relaxed mt-2 whitespace-pre-wrap"></div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/50 p-4 rounded-lg border border-slate-700 space-y-4">
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-500 font-bold">Categoria</label>
+                        <div id="view-categoria" class="text-amber-400 font-medium mt-1"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-500 font-bold">Resumo</label>
+                        <div id="view-resumo" class="text-slate-300 text-sm mt-1 italic"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-500 font-bold">Tags</label>
+                        <div id="view-tags" class="flex flex-wrap gap-2 mt-2"></div>
+                    </div>
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-500 font-bold">Referências</label>
+                        <div id="view-referencias" class="text-slate-300 text-sm mt-1 whitespace-pre-wrap"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Edição -->
     <div id="modal-edicao" class="fixed inset-0 bg-black/70 hidden items-center justify-center p-4 z-50">
-        <div class="bg-slate-800 rounded-xl p-6 max-w-2xl w-full border border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="bg-slate-800 rounded-xl p-6 max-w-4xl w-full border border-slate-700 space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-slate-700 pb-3">
                 <h3 class="text-xl font-bold text-amber-500">Editar Estudo</h3>
                 <button onclick="fecharModalEdicao()" class="text-slate-400 hover:text-white text-xl">&times;</button>
@@ -151,6 +196,57 @@
     </div>
 
     <script>
+        let estudoAtualId = null;
+
+        async function abrirModalVisualizacao(estudoId) {
+            if (!estudoId || estudoId === 'undefined') {
+                console.error("ID inválido para visualização.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/estudos/${estudoId}`);
+                if (!response.ok) {
+                    throw new Error(`Erro na API: ${response.status}`);
+                }
+
+                const dados = await response.json();
+                estudoAtualId = estudoId;
+
+                document.getElementById("view-titulo").innerText = dados.titulo || 'Sem Título';
+                document.getElementById("view-categoria").innerText = dados.categoria || 'Conceitos';
+                document.getElementById("view-resumo").innerText = dados.resumo || 'Sem resumo disponível.';
+                document.getElementById("view-conteudo").innerText = dados.conteudo || 'Sem conteúdo disponível.';
+                document.getElementById("view-referencias").innerText = dados.referencias || 'Nenhuma referência.';
+
+                const tagsContainer = document.getElementById("view-tags");
+                tagsContainer.innerHTML = '';
+                if (dados.tags) {
+                    const tags = dados.tags.split(',').map(t => t.trim()).filter(t => t);
+                    tags.forEach(tag => {
+                        const span = document.createElement('span');
+                        span.className = 'text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded border border-amber-500/30';
+                        span.innerText = tag;
+                        tagsContainer.appendChild(span);
+                    });
+                } else {
+                    tagsContainer.innerHTML = '<span class="text-xs text-slate-500">Sem tags.</span>';
+                }
+
+                const modal = document.getElementById("modal-visualizacao");
+                modal.classList.remove("hidden");
+                modal.classList.add("flex");
+            } catch (err) {
+                console.error("Erro ao carregar estudo para visualização:", err);
+            }
+        }
+
+        function fecharModalVisualizacao() {
+            const modal = document.getElementById("modal-visualizacao");
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+        }
+
         async function abrirModalEdicao(estudoId) {
             if (!estudoId || estudoId === 'undefined') {
                 console.error("ID inválido para edição.");
@@ -180,6 +276,12 @@
             } catch (err) {
                 console.error("Erro ao carregar estudo para edição:", err);
             }
+        }
+
+        function abrirModalEdicaoDesdeVisao() {
+            if (!estudoAtualId) return;
+            fecharModalVisualizacao();
+            abrirModalEdicao(estudoAtualId);
         }
 
         function fecharModalEdicao() {

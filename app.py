@@ -281,7 +281,7 @@ Estruture a resposta no seguinte formato Markdown:
 
     try:
         completion = ai_client.chat.completions.create(
-            model=os.getenv("NVIDIA_MODEL", "meta/muse-glimmer-30b"),
+            model=os.getenv("NVIDIA_MODEL", "meta/llama-3.1-405b-instruct"),
             messages=[{"role": "user", "content": prompt}],
             temperature=1,
             top_p=0.95,
@@ -293,9 +293,9 @@ Estruture a resposta no seguinte formato Markdown:
     except Exception as e:
         app.logger.exception("Erro ao gerar pregação com IA")
         return jsonify({
-            "erro": "Não foi possível gerar a pregação agora. Verifique a chave NVIDIA_API_KEY, o modelo configurado e a conexão com a API.",
-            "detalhe": str(e),
-        }), 502
+            "erro": "Não foi possível gerar a pregação agora.",
+            "detalhe": f"Erro interno: {str(e)}",
+        }), 500
 
 
 @app.route("/uploads/<filename>")
